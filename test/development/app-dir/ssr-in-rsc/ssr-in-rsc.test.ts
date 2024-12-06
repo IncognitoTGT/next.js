@@ -323,7 +323,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "TypeError: Cannot read properties of undefined (reading 'ReactCurrentDispatcher')",
-            "source": "app/exports/app-code/react-dom-server-node-explicit/page.js (1:1) @ Object.{module evaluation}
+            "source": "app/exports/app-code/react-dom-server-node-explicit/page.js (1:1)
 
           > 1 | import * as ReactDOMServerNode from 'react-dom/server.node'
               | ^
@@ -336,7 +336,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "Error: react-dom/server is not supported in React Server Components.",
-            "source": "app/exports/app-code/react-dom-server-node-explicit/page.js (1:1) @ Module.{module evaluation}
+            "source": "app/exports/app-code/react-dom-server-node-explicit/page.js (1:1)
 
           > 1 | import * as ReactDOMServerNode from 'react-dom/server.node'
               | ^
@@ -465,7 +465,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "TypeError: Cannot read properties of undefined (reading 'ReactCurrentDispatcher')",
-            "source": "internal-pkg/server.node.js (1:1) @ Object.{module evaluation}
+            "source": "internal-pkg/server.node.js (1:1)
 
           > 1 | import * as ReactDOMServerEdge from 'react-dom/server.node'
               | ^
@@ -478,7 +478,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "Error: react-dom/server is not supported in React Server Components.",
-            "source": "internal-pkg/server.node.js (1:1) @ Module.{module evaluation}
+            "source": "internal-pkg/server.node.js (1:1)
 
           > 1 | import * as ReactDOMServerEdge from 'react-dom/server.node'
               | ^
@@ -763,7 +763,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "TypeError: Cannot read properties of undefined (reading 'ReactCurrentDispatcher')",
-            "source": "internal-pkg/server.node.js (1:1) @ Object.{module evaluation}
+            "source": "internal-pkg/server.node.js (1:1)
 
           > 1 | import * as ReactDOMServerEdge from 'react-dom/server.node'
               | ^
@@ -776,7 +776,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "Error: react-dom/server is not supported in React Server Components.",
-            "source": "internal-pkg/server.node.js (1:1) @ Module.{module evaluation}
+            "source": "internal-pkg/server.node.js (1:1)
 
           > 1 | import * as ReactDOMServerEdge from 'react-dom/server.node'
               | ^
@@ -821,7 +821,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "TypeError: Cannot read properties of undefined (reading 'ReactCurrentDispatcher')",
-            "source": "internal-pkg/server.node.js (1:1) @ Object.{module evaluation}
+            "source": "internal-pkg/server.node.js (1:1)
 
           > 1 | import * as ReactDOMServerEdge from 'react-dom/server.node'
               | ^
@@ -834,7 +834,7 @@ describe('react-dom/server in React Server environment', () => {
         expect(redbox).toMatchInlineSnapshot(`
           {
             "description": "Error: react-dom/server is not supported in React Server Components.",
-            "source": "internal-pkg/server.node.js (1:1) @ Module.{module evaluation}
+            "source": "internal-pkg/server.node.js (1:1)
 
           > 1 | import * as ReactDOMServerEdge from 'react-dom/server.node'
               | ^
