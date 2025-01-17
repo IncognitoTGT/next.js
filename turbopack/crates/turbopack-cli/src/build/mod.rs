@@ -15,6 +15,8 @@ use turbo_tasks_backend::{
     noop_backing_storage, BackendOptions, NoopBackingStorage, TurboTasksBackend,
 };
 use turbo_tasks_fs::FileSystem;
+use turbo_tasks_memory::MemoryBackend;
+use turbopack::{css::chunk::CssChunkType, ecmascript::chunk::EcmascriptChunkType};
 use turbopack_browser::BrowserChunkingContext;
 use turbopack_cli_utils::issue::{ConsoleUi, LogOptions};
 use turbopack_core::{
@@ -226,10 +228,20 @@ async fn build_internal(
             match *node_env.await? {
                 NodeEnv::Development => {}
                 NodeEnv::Production => {
-                    builder = builder.ecmascript_chunking_config(ChunkingConfig {
-                        min_chunk_size: 20000,
-                        ..Default::default()
-                    })
+                    builder = builder.chunking_config(
+                        Vc::<EcmascriptChunkType>::default().to_resolved().await?,
+                        ChunkingConfig {
+                            min_chunk_size: 20000,
+                            ..Default::default()
+                        },
+                    );
+                    builder = builder.chunking_config(
+                        Vc::<CssChunkType>::default().to_resolved().await?,
+                        ChunkingConfig {
+                            min_chunk_size: 0,
+                            ..Default::default()
+                        },
+                    );
                 }
             }
 
@@ -255,10 +267,20 @@ async fn build_internal(
             match *node_env.await? {
                 NodeEnv::Development => {}
                 NodeEnv::Production => {
-                    builder = builder.ecmascript_chunking_config(ChunkingConfig {
-                        min_chunk_size: 20000,
-                        ..Default::default()
-                    })
+                    builder = builder.chunking_config(
+                        Vc::<EcmascriptChunkType>::default().to_resolved().await?,
+                        ChunkingConfig {
+                            min_chunk_size: 20000,
+                            ..Default::default()
+                        },
+                    );
+                    builder = builder.chunking_config(
+                        Vc::<CssChunkType>::default().to_resolved().await?,
+                        ChunkingConfig {
+                            min_chunk_size: 0,
+                            ..Default::default()
+                        },
+                    );
                 }
             }
 
