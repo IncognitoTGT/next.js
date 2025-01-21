@@ -96,12 +96,10 @@ impl EcmascriptChunkItem for AsyncLoaderChunkItem {
             (Some(id), true) => {
                 formatdoc! {
                     r#"
-                        let cached = null;
                         __turbopack_export_value__((__turbopack_import__) => {{
-                            cached = cached || Promise.resolve().then(() => {{
+                            return Promise.resolve().then(() => {{
                                 return __turbopack_import__({id});
                             }});
-                            return cached;
                         }});
                     "#,
                     id = StringifyJs(id),
@@ -110,12 +108,10 @@ impl EcmascriptChunkItem for AsyncLoaderChunkItem {
             (Some(id), false) => {
                 formatdoc! {
                     r#"
-                        let cached = null;
                         __turbopack_export_value__((__turbopack_import__) => {{
-                            cached = cached || Promise.all({chunks:#}.map((chunk) => __turbopack_load__(chunk))).then(() => {{
+                            return Promise.all({chunks:#}.map((chunk) => __turbopack_load__(chunk))).then(() => {{
                                 return __turbopack_import__({id});
                             }});
-                            return cached;
                         }});
                     "#,
                     chunks = StringifyJs(&chunks_data),
@@ -125,10 +121,8 @@ impl EcmascriptChunkItem for AsyncLoaderChunkItem {
             (None, true) => {
                 formatdoc! {
                     r#"
-                        let cached = null;
                         __turbopack_export_value__((__turbopack_import__) => {{
-                            cached = cached || Promise.resolve();
-                            return cached;
+                            return Promise.resolve();
                         }});
                     "#,
                 }
@@ -136,10 +130,8 @@ impl EcmascriptChunkItem for AsyncLoaderChunkItem {
             (None, false) => {
                 formatdoc! {
                     r#"
-                        let cached = null;
                         __turbopack_export_value__((__turbopack_import__) => {{
-                            cached = cached || Promise.all({chunks:#}.map((chunk) => __turbopack_load__(chunk))).then(() => {{}});
-                            return cached;
+                            return Promise.all({chunks:#}.map((chunk) => __turbopack_load__(chunk))).then(() => {{}});
                         }});
                     "#,
                     chunks = StringifyJs(&chunks_data),
