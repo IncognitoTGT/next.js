@@ -83,7 +83,7 @@ fn skip_filename() -> bool {
 }
 
 impl Task for TransformTask {
-    type Output = (TransformOutput, FxHashSet<String>, DashMap<String, usize>);
+    type Output = (TransformOutput, FxHashSet<Atom>, DashMap<String, usize>);
     type JsValue = Object;
 
     fn compute(&mut self) -> napi::Result<Self::Output> {

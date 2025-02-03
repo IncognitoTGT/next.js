@@ -44,6 +44,7 @@ use dashmap::DashMap;
 use fxhash::FxHashSet;
 use napi::bindgen_prelude::*;
 use swc_core::{
+    atoms::Atom,
     base::{Compiler, TransformOutput},
     common::{FilePathMapping, SourceMap},
 };
@@ -107,7 +108,7 @@ fn get_compiler() -> Arc<Compiler> {
 pub fn complete_output(
     env: &Env,
     output: TransformOutput,
-    eliminated_packages: FxHashSet<String>,
+    eliminated_packages: FxHashSet<Atom>,
     use_cache_telemetry_tracker: DashMap<String, usize>,
 ) -> napi::Result<Object> {
     let mut js_output = env.create_object()?;
