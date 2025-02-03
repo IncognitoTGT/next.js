@@ -4,6 +4,7 @@ use fxhash::FxHashSet;
 use next_custom_transforms::transforms::next_ssg::next_ssg;
 use once_cell::sync::Lazy;
 use swc_core::{
+    atoms::{atom, Atom},
     base::{try_with_handler, Compiler},
     common::{comments::SingleThreadedComments, FileName, FilePathMapping, SourceMap, GLOBALS},
     ecma::ast::noop_pass,
@@ -17,7 +18,7 @@ static COMPILER: Lazy<Arc<Compiler>> = Lazy::new(|| {
 
 #[test]
 fn should_collect_estimated_third_part_packages() {
-    let eliminated_packages: Rc<RefCell<FxHashSet<String>>> = Default::default();
+    let eliminated_packages: Rc<RefCell<FxHashSet<Atom>>> = Default::default();
     let fm = COMPILER.cm.new_source_file(
         FileName::Real("fixture.js".into()).into(),
         r#"import http from 'http'
@@ -57,7 +58,8 @@ export function getServerSideProps() {
         eliminated_packages
             .borrow()
             .iter()
-            .collect::<Vec<&String>>(),
-        vec!["@napi-rs/bcrypt", "http"]
+            .cloned()
+            .collect::<Vec<Atom>>(),
+        vec![atom!("@napi-rs/bcrypt"), atom!("http")]
     );
 }

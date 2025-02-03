@@ -7,6 +7,7 @@ use modularize_imports;
 use preset_env_base::query::targets_to_versions;
 use serde::Deserialize;
 use swc_core::{
+    atoms::Atom,
     common::{
         comments::{Comments, NoopComments},
         pass::Optional,
@@ -124,7 +125,7 @@ pub fn custom_before_pass<'a, C>(
     file: Arc<SourceFile>,
     opts: &'a TransformOptions,
     comments: C,
-    eliminated_packages: Rc<RefCell<FxHashSet<String>>>,
+    eliminated_packages: Rc<RefCell<FxHashSet<Atom>>>,
     unresolved_mark: Mark,
     use_cache_telemetry_tracker: Rc<DashMap<String, usize>>,
 ) -> impl Pass + 'a
