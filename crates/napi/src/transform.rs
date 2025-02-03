@@ -41,6 +41,7 @@ use napi::bindgen_prelude::*;
 use next_custom_transforms::chain_transforms::{custom_before_pass, TransformOptions};
 use once_cell::sync::Lazy;
 use swc_core::{
+    atoms::Atom,
     base::{try_with_handler, Compiler, TransformOutput},
     common::{comments::SingleThreadedComments, errors::ColorConfig, FileName, Mark, GLOBALS},
     ecma::ast::noop_pass,
