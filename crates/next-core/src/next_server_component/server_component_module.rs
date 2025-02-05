@@ -21,6 +21,7 @@ use turbopack_ecmascript::{
     references::esm::{EsmExport, EsmExports},
     runtime_functions::{TURBOPACK_EXPORT_NAMESPACE, TURBOPACK_IMPORT},
     utils::StringifyJs,
+    EcmascriptParsable,
 };
 
 use super::server_component_reference::NextServerComponentModuleReference;
@@ -108,10 +109,18 @@ impl EcmascriptChunkPlaceable for NextServerComponentModule {
             EsmExport::ImportedBinding(module_reference, "default".into(), false),
         );
 
+        let Some(module) = ResolvedVc::try_sidecast::<Box<dyn EcmascriptParsable>>(self.module)
+        else {
+            bail!("not an ecmascript");
+        };
+
+        let parsed = module.failsafe_parse().to_resolved().await?;
+
         Ok(EcmascriptExports::EsmExports(
             EsmExports {
                 exports,
                 star_exports: vec![module_reference],
+                parsed,
             }
             .resolved_cell(),
         )
