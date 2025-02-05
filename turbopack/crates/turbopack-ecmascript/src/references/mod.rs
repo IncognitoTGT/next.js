@@ -450,7 +450,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
 
     special_cases(&path.await?.path, &mut analysis);
 
-    let parsed = parsed.await?;
+    let parsed_ref = parsed.await?;
 
     let ParseResult::Ok {
         program,
@@ -459,7 +459,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
         comments,
         source_map,
         ..
-    } = &*parsed
+    } = &*parsed_ref
     else {
         return analysis.build(false).await;
     };
@@ -748,6 +748,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
             }
 
             let esm_exports = EsmExports {
+                parsed: parsed.to_resolved().await?,
                 exports: esm_exports,
                 star_exports: esm_star_exports,
             }
@@ -766,6 +767,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
 
                     EcmascriptExports::EsmExports(
                         EsmExports {
+                            parsed: parsed.to_resolved().await?,
                             exports: Default::default(),
                             star_exports: Default::default(),
                         }
@@ -777,6 +779,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                 DetectedDynamicExportType::UsingModuleDeclarations
                 | DetectedDynamicExportType::None => EcmascriptExports::EsmExports(
                     EsmExports {
+                        parsed: parsed.to_resolved().await?,
                         exports: Default::default(),
                         star_exports: Default::default(),
                     }
@@ -791,6 +794,7 @@ pub(crate) async fn analyse_ecmascript_module_internal(
                 DetectedDynamicExportType::UsingModuleDeclarations => {
                     EcmascriptExports::EsmExports(
                         EsmExports {
+                            parsed: parsed.to_resolved().await?,
                             exports: Default::default(),
                             star_exports: Default::default(),
                         }

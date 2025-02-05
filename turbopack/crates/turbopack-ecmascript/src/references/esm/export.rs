@@ -33,7 +33,6 @@ use crate::{
     magic_identifier,
     parse::ParseResult,
     runtime_functions::{TURBOPACK_DYNAMIC, TURBOPACK_ESM},
-    EcmascriptParsable,
 };
 
 #[derive(Clone, Hash, Debug, PartialEq, Eq, Serialize, Deserialize, TraceRawVcs, NonLocalValue)]
@@ -431,7 +430,7 @@ async fn emit_star_exports_issue(source_ident: Vc<AssetIdent>, message: RcStr) -
 #[turbo_tasks::value(shared)]
 #[derive(Hash, Debug)]
 pub struct EsmExports {
-    pub parsable: ResolvedVc<Box<dyn EcmascriptParsable>>,
+    pub parsed: ResolvedVc<ParseResult>,
     pub exports: BTreeMap<RcStr, EsmExport>,
     pub star_exports: Vec<ResolvedVc<Box<dyn ModuleReference>>>,
 }
@@ -502,7 +501,7 @@ impl CodeGenerateable for EsmExports {
     ) -> Result<Vc<CodeGeneration>> {
         let expanded = self.expand_exports().await?;
         let this = self.await?;
-        let ParseResult::Ok { eval_context, .. } = &*this.parsable.failsafe_parse().await? else {
+        let ParseResult::Ok { eval_context, .. } = &*this.parsed.await? else {
             bail!("Failed to parse module");
         };
         let export_ctxts = &eval_context.imports.exports;
