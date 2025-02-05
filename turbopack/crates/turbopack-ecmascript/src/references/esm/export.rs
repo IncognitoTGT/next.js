@@ -1,6 +1,6 @@
 use std::{borrow::Cow, collections::BTreeMap, ops::ControlFlow};
 
-use anyhow::Result;
+use anyhow::{bail, Result};
 use rustc_hash::FxHashSet;
 use serde::{Deserialize, Serialize};
 use swc_core::{
@@ -28,10 +28,10 @@ use turbopack_core::{
 
 use super::base::ReferencedAsset;
 use crate::{
-    analyzer::graph::EvalContext,
     chunk::{EcmascriptChunkPlaceable, EcmascriptExports},
     code_gen::{CodeGenerateable, CodeGeneration, CodeGenerationHoistedStmt},
     magic_identifier,
+    parse::ParseResult,
     runtime_functions::{TURBOPACK_DYNAMIC, TURBOPACK_ESM},
     EcmascriptParsable,
 };
@@ -501,6 +501,11 @@ impl CodeGenerateable for EsmExports {
         chunking_context: Vc<Box<dyn ChunkingContext>>,
     ) -> Result<Vc<CodeGeneration>> {
         let expanded = self.expand_exports().await?;
+        let this = self.await?;
+        let ParseResult::Ok { eval_context, .. } = &*this.parsable.failsafe_parse().await? else {
+            bail!("Failed to parse module");
+        };
+        let export_ctxts = &eval_context.imports.exports;
 
         let mut dynamic_exports = Vec::<Box<Expr>>::new();
         for dynamic_export_asset in &expanded.dynamic_exports {
@@ -530,6 +535,13 @@ impl CodeGenerateable for EsmExports {
                     } else {
                         Cow::Borrowed(name.as_str())
                     };
+                    let ctxt = export_ctxts
+                        .get(name)
+                        .unwrap_or_else(|| {
+                            panic!("Failed to find export context for {}", name);
+                        })
+                        .1;
+
                     if *mutable {
                         Some(quote!(
                             "([() => $local, ($new) => $local = $new])" as Expr,
@@ -591,10 +603,17 @@ impl CodeGenerateable for EsmExports {
                     referenced_asset
                         .get_ident(module_graph, chunking_context)
                         .await?
-                        .map(|ident| {
+                        .map(|name| {
+                            let ctxt = export_ctxts
+                                .get(&*name)
+                                .unwrap_or_else(|| {
+                                    panic!("Failed to find export context for {}", name);
+                                })
+                                .1;
+
                             quote!(
                                 "(() => $imported)" as Expr,
-                                imported = Ident::new(ident.into(), DUMMY_SP, Default::default())
+                                imported = Ident::new(name.into(), DUMMY_SP, ctxt)
                             )
                         })
                 }
