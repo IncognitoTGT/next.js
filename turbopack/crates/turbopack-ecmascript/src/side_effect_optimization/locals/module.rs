@@ -20,7 +20,7 @@ use crate::{
         async_module::OptionAsyncModule,
         esm::{EsmExport, EsmExports},
     },
-    EcmascriptModuleAsset,
+    EcmascriptModuleAsset, EcmascriptParsable,
 };
 
 /// A module derived from an original ecmascript module that only contains the
@@ -101,9 +101,11 @@ impl EcmascriptChunkPlaceable for EcmascriptModuleLocalsModule {
             }
         }
 
+        let parsed = self.module.failsafe_parse().to_resolved().await?;
         let exports = EsmExports {
             exports,
             star_exports: vec![],
+            parsed,
         }
         .resolved_cell();
         Ok(EcmascriptExports::EsmExports(exports).cell())
