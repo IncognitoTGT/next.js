@@ -21,7 +21,7 @@ use crate::{
         esm::{EsmExport, EsmExports},
     },
     side_effect_optimization::reference::EcmascriptModulePartReference,
-    EcmascriptAnalyzable,
+    EcmascriptAnalyzable, EcmascriptParsable,
 };
 
 /// A module derived from an original ecmascript module that only contains all
@@ -300,9 +300,17 @@ impl EcmascriptChunkPlaceable for EcmascriptModuleFacadeModule {
             _ => bail!("Unexpected ModulePart for EcmascriptModuleFacadeModule"),
         }
 
+        let Some(module) = ResolvedVc::try_sidecast::<Box<dyn EcmascriptParsable>>(self.module)
+        else {
+            bail!("Expected EcmascriptParsable for a EcmascriptModuleFacadeModule");
+        };
+
+        let parsed = module.failsafe_parse().to_resolved().await?;
+
         let exports = EsmExports {
             exports,
             star_exports,
+            parsed,
         }
         .resolved_cell();
         Ok(EcmascriptExports::EsmExports(exports).cell())
