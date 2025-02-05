@@ -537,7 +537,7 @@ impl CodeGenerateable for EsmExports {
                     let ctxt = export_ctxts
                         .get(name)
                         .unwrap_or_else(|| {
-                            panic!("Failed to find export context for {}", name);
+                            bail!("Failed to find export context for {}", name);
                         })
                         .1;
 
