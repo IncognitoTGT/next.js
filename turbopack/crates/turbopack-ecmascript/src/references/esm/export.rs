@@ -534,23 +534,20 @@ impl CodeGenerateable for EsmExports {
                     } else {
                         Cow::Borrowed(name.as_str())
                     };
-                    let ctxt = export_ctxts
-                        .get(name)
-                        .unwrap_or_else(|| {
-                            bail!("Failed to find export context for {}", name);
-                        })
-                        .1;
+                    let Some((_, ctxt)) = export_ctxts.get(name) else {
+                        bail!("Failed to find export context for {}", name);
+                    };
 
                     if *mutable {
                         Some(quote!(
                             "([() => $local, ($new) => $local = $new])" as Expr,
-                            local = Ident::new(local.into(), DUMMY_SP, ctxt),
-                            new = Ident::new(format!("new_{name}").into(), DUMMY_SP, ctxt),
+                            local = Ident::new(local.into(), DUMMY_SP, *ctxt),
+                            new = Ident::new(format!("new_{name}").into(), DUMMY_SP, *ctxt),
                         ))
                     } else {
                         Some(quote!(
                             "(() => $local)" as Expr,
-                            local = Ident::new((name as &str).into(), DUMMY_SP, ctxt)
+                            local = Ident::new((name as &str).into(), DUMMY_SP, *ctxt)
                         ))
                     }
                 }
@@ -603,18 +600,16 @@ impl CodeGenerateable for EsmExports {
                         .get_ident(module_graph, chunking_context)
                         .await?
                         .map(|name| {
-                            let ctxt = export_ctxts
-                                .get(&*name)
-                                .unwrap_or_else(|| {
-                                    bail!("Failed to find export context for {}", name);
-                                })
-                                .1;
+                            let Some((_, ctxt)) = export_ctxts.get(&*name) else {
+                                bail!("Failed to find export context for {}", name);
+                            };
 
-                            quote!(
+                            Ok(quote!(
                                 "(() => $imported)" as Expr,
-                                imported = Ident::new(name.into(), DUMMY_SP, ctxt)
-                            )
+                                imported = Ident::new(name.into(), DUMMY_SP, *ctxt)
+                            ))
                         })
+                        .transpose()?
                 }
             };
             if let Some(expr) = expr {
