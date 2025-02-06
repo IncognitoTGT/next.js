@@ -707,8 +707,13 @@ export async function handleAction({
               if (actionId !== null) {
                 console.error(err)
               }
+              // FIXME: this was trying to do a not-found,
+              //   return { type: 'not-found' }
+              // but due to bugs it effectively did this
               return {
-                type: 'not-found',
+                type: 'done',
+                result: undefined,
+                formState: undefined,
               }
             }
 
@@ -856,14 +861,20 @@ export async function handleAction({
               return
             }
           } else {
+            // !isMultipartAction
             try {
               actionModId = getActionModIdOrError(actionId, serverModuleMap)
             } catch (err) {
               if (actionId !== null) {
                 console.error(err)
               }
+              // FIXME: this was trying to do a not-found,
+              //   return { type: 'not-found' }
+              // but due to bugs it effectively did this
               return {
-                type: 'not-found',
+                type: 'done',
+                result: undefined,
+                formState: undefined,
               }
             }
 
@@ -912,8 +923,13 @@ export async function handleAction({
           if (actionId !== null) {
             console.error(err)
           }
+          // FIXME: this was trying to do a not-found,
+          //   return { type: 'not-found' }
+          // but due to bugs it effectively did this
           return {
-            type: 'not-found',
+            type: 'done',
+            result: undefined,
+            formState: undefined,
           }
         }
 
