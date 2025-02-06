@@ -1078,26 +1078,29 @@ function getActionModIdOrError(
   actionId: string | null,
   serverModuleMap: ServerModuleMap
 ): string {
+  // if we're missing the action ID header, we can't do any further processing
+  if (!actionId) {
+    throw new Error("Invariant: Missing 'next-action' header.")
+  }
+
+  let actionModId: string
   try {
-    // if we're missing the action ID header, we can't do any further processing
-    if (!actionId) {
-      throw new Error("Invariant: Missing 'next-action' header.")
-    }
-
-    const actionModId = serverModuleMap?.[actionId]?.id
-
-    if (!actionModId) {
-      throw new Error(
-        "Invariant: Couldn't find action module ID from module map."
-      )
-    }
-
-    return actionModId
+    // `serverModuleMap` is a proxy (see: `createServerModuleMap`) which runs some lookup code,
+    // so this can throw despite guarding the accesses with `?.`
+    actionModId = serverModuleMap?.[actionId]?.id
   } catch (err) {
     throw new Error(
-      `Failed to find Server Action "${actionId}". This request might be from an older or newer deployment. ${
-        err instanceof Error ? `Original error: ${err.message}` : ''
+      `Failed to find Server Action "${actionId}". This request might be from an older or newer deployment.${
+        err instanceof Error ? ` Original error: ${err.message}` : ''
       }`
     )
   }
+
+  if (!actionModId) {
+    throw new Error(
+      `Failed to find Server Action "${actionId}". This request might be from an older or newer deployment.`
+    )
+  }
+
+  return actionModId
 }
