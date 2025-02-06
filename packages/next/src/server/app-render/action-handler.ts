@@ -52,15 +52,6 @@ import { synchronizeMutableCookies } from '../async-storage/request-store'
 import type { TemporaryReferenceSet } from 'react-server-dom-webpack/server.edge'
 import { workUnitAsyncStorage } from '../app-render/work-unit-async-storage.external'
 
-function formDataFromSearchQueryString(query: string) {
-  const searchParams = new URLSearchParams(query)
-  const formData = new FormData()
-  for (const [key, value] of searchParams) {
-    formData.append(key, value)
-  }
-  return formData
-}
-
 function nodeHeadersToRecord(
   headers: IncomingHttpHeaders | OutgoingHttpHeaders
 ) {
@@ -485,13 +476,8 @@ export async function handleAction({
   const contentType = req.headers['content-type']
   const { serverActionsManifest, page } = ctx.renderOpts
 
-  const {
-    actionId,
-    isURLEncodedAction,
-    isMultipartAction,
-    isFetchAction,
-    isServerAction,
-  } = getServerActionRequestMetadata(req)
+  const { actionId, isMultipartAction, isFetchAction, isServerAction } =
+    getServerActionRequestMetadata(req)
 
   // If it's not a Server Action, skip handling.
   if (!isServerAction) {
@@ -729,21 +715,11 @@ export async function handleAction({
             }
 
             const actionData = Buffer.concat(chunks).toString('utf-8')
-
-            if (isURLEncodedAction) {
-              const formData = formDataFromSearchQueryString(actionData)
-              boundActionArguments = await decodeReply(
-                formData,
-                serverModuleMap,
-                { temporaryReferences }
-              )
-            } else {
-              boundActionArguments = await decodeReply(
-                actionData,
-                serverModuleMap,
-                { temporaryReferences }
-              )
-            }
+            boundActionArguments = await decodeReply(
+              actionData,
+              serverModuleMap,
+              { temporaryReferences }
+            )
           }
         } else if (
           // The type check here ensures that `req` is correctly typed, and the
@@ -885,20 +861,11 @@ export async function handleAction({
 
             const actionData = Buffer.concat(chunks).toString('utf-8')
 
-            if (isURLEncodedAction) {
-              const formData = formDataFromSearchQueryString(actionData)
-              boundActionArguments = await decodeReply(
-                formData,
-                serverModuleMap,
-                { temporaryReferences }
-              )
-            } else {
-              boundActionArguments = await decodeReply(
-                actionData,
-                serverModuleMap,
-                { temporaryReferences }
-              )
-            }
+            boundActionArguments = await decodeReply(
+              actionData,
+              serverModuleMap,
+              { temporaryReferences }
+            )
           }
         } else {
           throw new Error('Invariant: Unknown request type.')

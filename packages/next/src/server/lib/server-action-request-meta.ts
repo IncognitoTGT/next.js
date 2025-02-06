@@ -7,7 +7,6 @@ export function getServerActionRequestMetadata(
   req: IncomingMessage | BaseNextRequest | NextRequest
 ): {
   actionId: string | null
-  isURLEncodedAction: boolean
   isMultipartAction: boolean
   isFetchAction: boolean
   isServerAction: boolean
@@ -23,9 +22,8 @@ export function getServerActionRequestMetadata(
     contentType = req.headers['content-type'] ?? null
   }
 
-  const isURLEncodedAction = Boolean(
-    req.method === 'POST' && contentType === 'application/x-www-form-urlencoded'
-  )
+  // might be a no-js action or a fetch action that uses FormData.
+  // we can't tell at this point, we need to run it through `decodeAction` to make sure.
   const isMultipartAction = Boolean(
     req.method === 'POST' && contentType?.startsWith('multipart/form-data')
   )
@@ -35,13 +33,10 @@ export function getServerActionRequestMetadata(
       req.method === 'POST'
   )
 
-  const isServerAction = Boolean(
-    isFetchAction || isURLEncodedAction || isMultipartAction
-  )
+  const isServerAction = Boolean(isFetchAction || isMultipartAction)
 
   return {
     actionId,
-    isURLEncodedAction,
     isMultipartAction,
     isFetchAction,
     isServerAction,

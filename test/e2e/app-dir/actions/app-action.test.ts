@@ -773,10 +773,10 @@ describe('app-dir action handling', () => {
       await next.fetch('/server', {
         method: 'POST',
         headers: {
-          'content-type': 'application/x-www-form-urlencoded',
+          'content-type': 'text/plain',
           'next-action': 'abc123',
         },
-        body: 'foo=bar',
+        body: '["foo","bar"]',
       })
 
       await retry(async () =>
@@ -1600,7 +1600,7 @@ describe('app-dir action handling', () => {
   })
 
   describe('redirects', () => {
-    it('redirects properly when server action handler uses `redirect`', async () => {
+    it('redirects properly when route handler uses `redirect`', async () => {
       const postRequests = []
       const responseCodes = []
 
@@ -1629,12 +1629,12 @@ describe('app-dir action handling', () => {
         expect(await browser.url()).toContain('success=true')
       })
 
-      // verify that the POST request was only made to the action handler
+      // verify that the POST request was only made to the route handler
       expect(postRequests).toEqual(['/redirects/api-redirect'])
       expect(responseCodes).toEqual([303])
     })
 
-    it('redirects properly when server action handler uses `permanentRedirect`', async () => {
+    it('redirects properly when route handler uses `permanentRedirect`', async () => {
       const postRequests = []
       const responseCodes = []
 
@@ -1662,7 +1662,7 @@ describe('app-dir action handling', () => {
       await retry(async () => {
         expect(await browser.url()).toContain('success=true')
       })
-      // verify that the POST request was only made to the action handler
+      // verify that the POST request was only made to the route handler
       expect(postRequests).toEqual(['/redirects/api-redirect-permanent'])
       expect(responseCodes).toEqual([303])
     })
