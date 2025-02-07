@@ -1009,8 +1009,14 @@ export function getRedboxSource(browser: BrowserInterface) {
         )
       )
     const root = portal.shadowRoot
-    return root.querySelector('[data-nextjs-codeframe], [data-nextjs-terminal]')
-      .innerText
+    const innerText = root.querySelector(
+      '[data-nextjs-codeframe], [data-nextjs-terminal]'
+    ).innerText
+
+    return innerText
+      .split('\n')
+      .map((line) => line.trimEnd())
+      .join('\n')
   })
 }
 

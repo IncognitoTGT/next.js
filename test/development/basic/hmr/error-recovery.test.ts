@@ -169,7 +169,8 @@ describe.each([
       const source = next.normalizeTestDirContent(
         await getRedboxSource(browser)
       )
-      if (basePath === '' && !process.env.TURBOPACK) {
+      const isWebpack = !process.env.TURBOPACK && !process.env.NEXT_RSPACK
+      if (basePath === '' && isWebpack) {
         expect(source).toMatchInlineSnapshot(`
           "./pages/hmr/about2.js
           Error:   x Unexpected token. Did you mean \`{'}'}\` or \`&rbrace;\`?
@@ -205,6 +206,33 @@ describe.each([
 
             Unexpected token. Did you mean \`{'}'}\` or \`&rbrace;\`?"
           `)
+      } else if (basePath === '' && process.env.NEXT_RSPACK) {
+        expect(source).toMatchInlineSnapshot(`
+         "./pages/hmr/about2.js
+           × Module build failed:
+           ├─▶   ×
+           │     │   x Unexpected token. Did you mean \`{'}'}\` or \`&rbrace;\`?
+           │     │    ,-[TEST_DIR/pages/hmr/about2.js:7:1]
+           │     │  4 |       <p>This is the about page.</p>
+           │     │  5 |     div
+           │     │  6 |   )
+           │     │  7 | }
+           │     │    : ^
+           │     │    \`----
+           │     │
+           │     │   x Unexpected eof
+           │     │    ,-[TEST_DIR/pages/hmr/about2.js:7:3]
+           │     │  5 |     div
+           │     │  6 |   )
+           │     │  7 | }
+           │     │    \`----
+           │     │
+           │
+           ╰─▶ Syntax Error
+
+         Import trace for requested module:
+         ./pages/hmr/about2.js"
+        `)
       } else if (basePath === '/docs' && !process.env.TURBOPACK) {
         expect(source).toMatchInlineSnapshot(`
           "./pages/hmr/about2.js
@@ -529,6 +557,27 @@ describe.each([
 
               Read more: https://nextjs.org/docs/app/api-reference/next-config-js/turbo#webpack-loaders"
             `)
+        } else if (process.env.NEXT_RSPACK) {
+          expect(await getRedboxSource(browser)).toMatchInlineSnapshot(`
+           "./components/parse-error.xyz
+             × Module parse failed:
+             ╰─▶   × JavaScript parsing error: Expression expected
+                    ╭─[3:0]
+                  1 │ This
+                  2 │ is
+                  3 │ }}}
+                    · ─
+                  4 │ invalid
+                  5 │ js
+                    ╰────
+
+             help:
+                   You may need an appropriate loader to handle this file type.
+
+           Import trace for requested module:
+           ./components/parse-error.xyz
+           ./pages/hmr/about8.js"
+          `)
         } else {
           expect(await getRedboxSource(browser)).toMatchInlineSnapshot(`
                       "./components/parse-error.xyz
@@ -605,6 +654,29 @@ describe.each([
 
               Expression expected"
             `)
+        } else if (process.env.NEXT_RSPACK) {
+          expect(next.normalizeTestDirContent(redboxSource))
+            .toMatchInlineSnapshot(`
+           "./components/parse-error.js
+             × Module build failed:
+             ├─▶   ×
+             │     │   x Expression expected
+             │     │    ,-[./components/parse-error.js:3:1]
+             │     │  1 | This
+             │     │  2 | is
+             │     │  3 | }}}
+             │     │    : ^
+             │     │  4 | invalid
+             │     │  5 | js
+             │     │    \`----
+             │     │
+             │
+             ╰─▶ Syntax Error
+
+           Import trace for requested module:
+           ./components/parse-error.js
+           ./pages/hmr/about9.js"
+          `)
         } else {
           redboxSource = redboxSource.substring(
             0,
