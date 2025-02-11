@@ -51,13 +51,13 @@ export async function runCompiler(
   ]
 > {
   if (process.env.NEXT_RSPACK_OTEL) {
-    console.log('next bin rspack otel')
     await require('@rspack/core').experiments.globalTrace.register(
       'trace',
       'otel',
       ''
     )
   }
+
   return new Promise((resolve, reject) => {
     const compiler = webpack(config)
     // Ensure we use the previous inputFileSystem
@@ -66,9 +66,7 @@ export async function runCompiler(
     }
     compiler.fsStartTime = Date.now()
     compiler.run((err, stats) => {
-      console.log('compiler.run', compiler.name, err)
-
-      const result = runWebpackSpan
+      const compilerResult = runWebpackSpan
         .traceChild('webpack-generate-error-stats')
         .traceFn(() =>
           generateStats({ errors: [], warnings: [], stats }, stats!)
@@ -77,28 +75,34 @@ export async function runCompiler(
       const webpackCloseSpan = runWebpackSpan.traceChild('webpack-close', {
         name: config.name || 'unknown',
       })
-      webpackCloseSpan
-        .traceAsyncFn(() => closeCompiler(compiler))
-        .then(() => {
+
+      let closePromise = webpackCloseSpan.traceAsyncFn(() =>
+        closeCompiler(compiler)
+      )
+
+      if (process.env.NEXT_RSPACK) {
+        closePromise = closePromise.then(() => {
           return require('@rspack/core').experiments.globalTrace.cleanup()
         })
-        .then(() => {
-          if (err) {
-            const reason = err.stack ?? err.toString()
-            if (reason) {
-              return resolve([
-                {
-                  errors: [{ message: reason, details: (err as any).details }],
-                  warnings: [],
-                  stats,
-                },
-                compiler.inputFileSystem,
-              ])
-            }
-            return reject(err)
-          } else if (!stats) throw new Error('No Stats from webpack')
-          return resolve([result, compiler.inputFileSystem])
-        })
+      }
+
+      closePromise.then(() => {
+        if (err) {
+          const reason = err.stack ?? err.toString()
+          if (reason) {
+            return resolve([
+              {
+                errors: [{ message: reason, details: (err as any).details }],
+                warnings: [],
+                stats,
+              },
+              compiler.inputFileSystem,
+            ])
+          }
+          return reject(err)
+        } else if (!stats) throw new Error('No Stats from webpack')
+        return resolve([compilerResult, compiler.inputFileSystem])
+      })
     })
   })
 }

@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 if (process.env.NEXT_RSPACK) {
-  console.log('next bin rspack')
   // silent rspack's schema check
   process.env.RSPACK_CONFIG_VALIDATE = 'loose-silent'
 }

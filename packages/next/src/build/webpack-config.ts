@@ -487,8 +487,6 @@ export default async function getBaseWebpackConfig(
           pagesDir,
           appDir,
           hasReactRefresh: dev && isClient,
-          // nextConfig: config,
-          // jsConfig,
           transpilePackages: finalTranspilePackages,
           supportedBrowsers,
           swcCacheDir: path.join(
