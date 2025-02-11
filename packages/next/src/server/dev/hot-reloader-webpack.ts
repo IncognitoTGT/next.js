@@ -754,7 +754,6 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
 
   public async start(): Promise<void> {
     if (process.env.NEXT_RSPACK_OTEL) {
-      console.log('next bin rspack otel')
       await require('@rspack/core').experiments.globalTrace.register(
         'trace',
         'otel',
