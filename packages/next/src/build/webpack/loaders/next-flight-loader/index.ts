@@ -60,7 +60,6 @@ export default function transformSource(
   if (typeof source !== 'string') {
     throw new Error('Expected source to have been transformed to a string.')
   }
-
   const module = this._module!
 
   // Assign the RSC meta information to buildInfo.
@@ -96,7 +95,10 @@ export default function transformSource(
 
   // A client boundary.
   if (buildInfo.rsc?.type === RSC_MODULE_TYPES.client) {
-    const assumedSourceType = getAssumedSourceType(module, 'auto')
+    const assumedSourceType = getAssumedSourceType(
+      module,
+      (module.parser as javascript.JavascriptParser).sourceType
+    )
 
     const clientRefs = buildInfo.rsc.clientRefs!
     const stringifiedResourceKey = JSON.stringify(resourceKey)
