@@ -3,10 +3,7 @@ exports.__esModule = true
 exports.default = undefined
 
 exports.init = function () {
-  console.log('init webpack')
-
   if (process.env.NEXT_RSPACK) {
-    console.log('using rspack')
     // eslint-disable-next-line
     Object.assign(exports, require('@rspack/core'))
     Object.assign(exports, {
@@ -14,7 +11,6 @@ exports.init = function () {
     })
 
     if (process.env.RSPACK_TRACE) {
-      console.log('registering rspack trace')
       exports.rspack.experiments.globalTrace.register(
         'trace',
         'chrome',
@@ -22,7 +18,6 @@ exports.init = function () {
       )
 
       process.on('exit', () => {
-        console.log('cleaning up rspack')
         exports.rspack.experiments.globalTrace.cleanup()
       })
     }
@@ -53,7 +48,6 @@ exports.init = function () {
       webpack: require('webpack'),
     })
   } else {
-    console.log('loading bundle5')
     Object.assign(exports, require('./bundle5')())
   }
 }
