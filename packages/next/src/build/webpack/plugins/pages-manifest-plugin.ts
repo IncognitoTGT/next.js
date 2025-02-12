@@ -172,7 +172,7 @@ export default class PagesManifestPlugin
               null,
               2
             )
-          )
+          ) as unknown as webpack.sources.RawSource
         )
       }
     }

@@ -174,11 +174,7 @@ export class TraceEntryPointsPlugin implements webpack.WebpackPluginInstance {
 
   // Here we output all traced assets and webpack chunks to a
   // ${page}.js.nft.json file
-  async createTraceAssets(
-    compilation: webpack.Compilation,
-    assets: any,
-    span: Span
-  ) {
+  async createTraceAssets(compilation: webpack.Compilation, span: Span) {
     const outputPath = compilation.outputOptions.path || ''
 
     await span.traceChild('create-trace-assets').traceAsyncFn(async () => {
@@ -289,11 +285,14 @@ export class TraceEntryPointsPlugin implements webpack.WebpackPluginInstance {
           })
         )
 
-        assets[traceOutputName] = new sources.RawSource(
-          JSON.stringify({
-            version: TRACE_OUTPUT_VERSION,
-            files: finalFiles,
-          })
+        compilation.emitAsset(
+          traceOutputName,
+          new sources.RawSource(
+            JSON.stringify({
+              version: TRACE_OUTPUT_VERSION,
+              files: finalFiles,
+            })
+          ) as unknown as webpack.sources.RawSource
         )
       }
     })
@@ -644,6 +643,18 @@ export class TraceEntryPointsPlugin implements webpack.WebpackPluginInstance {
         'next-trace-entrypoint-plugin'
       )
       traceEntrypointsPluginSpan.traceFn(() => {
+        compilation.hooks.processAssets.tapAsync(
+          {
+            name: PLUGIN_NAME,
+            stage: webpack.Compilation.PROCESS_ASSETS_STAGE_SUMMARIZE,
+          },
+          (_, callback: any) => {
+            this.createTraceAssets(compilation, traceEntrypointsPluginSpan)
+              .then(() => callback())
+              .catch((err) => callback(err))
+          }
+        )
+
         let resolver = compilation.resolverFactory.get('normal')
 
         function getPkgName(name: string) {
