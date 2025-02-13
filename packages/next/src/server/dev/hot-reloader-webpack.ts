@@ -523,8 +523,8 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
                   stackTrace
                 )?.[1]
                 if (file) {
-                  // `file` is filepath in `pages/` but it can be weird long webpack url in `app/`.
-                  // If it's a webpack loader URL, it will start with '(app-pages)/./'
+                  // `file` is filepath in `pages/` but it can be a webpack url.
+                  // If it's a webpack loader URL, it will include the app-pages layer
                   if (
                     file.startsWith(`(${WEBPACK_LAYERS.appPagesBrowser})/./`)
                   ) {
@@ -540,6 +540,15 @@ export default class HotReloaderWebpack implements NextJsHotReloaderInterface {
                     if (modules.length > 0) {
                       fileMessage = ` when ${modules.join(', ')} changed`
                     }
+                  } else if (
+                    // Handle known webpack layers
+                    file.startsWith(`(${WEBPACK_LAYERS.pagesDirBrowser})/./`)
+                  ) {
+                    const cleanedFilePath = file.slice(
+                      `(${WEBPACK_LAYERS.pagesDirBrowser})/`.length
+                    )
+
+                    fileMessage = ` when ${cleanedFilePath} changed`
                   } else {
                     fileMessage = ` when ${file} changed`
                   }
