@@ -196,13 +196,13 @@ describe.each([
         `)
       } else if (basePath === '' && process.env.TURBOPACK) {
         expect(source).toMatchInlineSnapshot(`
-            "./pages/hmr/about2.js:7:1
-            Parsing ecmascript source code failed
-              5 |     div
-              6 |   )
-            > 7 | }
-                | ^
-              8 |
+         "./pages/hmr/about2.js (7:1)
+         Parsing ecmascript source code failed
+           5 |     div
+           6 |   )
+         > 7 | }
+             | ^
+           8 |
 
             Unexpected token. Did you mean \`{'}'}\` or \`&rbrace;\`?"
           `)
@@ -232,6 +232,7 @@ describe.each([
 
          Import trace for requested module:
          ./pages/hmr/about2.js"
+         Unexpected token. Did you mean \`{'}'}\` or \`&rbrace;\`?"
         `)
       } else if (basePath === '/docs' && !process.env.TURBOPACK) {
         expect(source).toMatchInlineSnapshot(`
@@ -259,7 +260,7 @@ describe.each([
         `)
       } else if (basePath === '/docs' && process.env.TURBOPACK) {
         expect(source).toMatchInlineSnapshot(`
-            "./pages/hmr/about2.js:7:1
+            "./pages/hmr/about2.js (7:1)
             Parsing ecmascript source code failed
               5 |     div
               6 |   )
@@ -643,15 +644,16 @@ describe.each([
         if (process.env.TURBOPACK) {
           expect(next.normalizeTestDirContent(redboxSource))
             .toMatchInlineSnapshot(`
-              "./components/parse-error.js:3:1
-              Parsing ecmascript source code failed
-                1 | This
-                2 | is
-              > 3 | }}}
-                  | ^
-                4 | invalid
-                5 | js
+           "./components/parse-error.js (3:1)
+           Parsing ecmascript source code failed
+             1 | This
+             2 | is
+           > 3 | }}}
+               | ^
+             4 | invalid
+             5 | js
 
+<<<<<<< HEAD
               Expression expected"
             `)
         } else if (process.env.NEXT_RSPACK) {
@@ -676,6 +678,9 @@ describe.each([
            Import trace for requested module:
            ./components/parse-error.js
            ./pages/hmr/about9.js"
+=======
+           Expression expected"
+>>>>>>> origin/canary
           `)
         } else {
           redboxSource = redboxSource.substring(
