@@ -636,5 +636,9 @@
   "635": "%s: Invalid source map. Only conformant source maps can be used to find the original code.",
   "636": "Invariant: frames must be a function when the React version has React.use. This is a bug in Next.js.",
   "637": "Invariant: frames must be an array when the React version does not have React.use. This is a bug in Next.js.",
-  "638": "The following tags are missing in the Root Layout: %s.\\nRead more at https://nextjs.org/docs/messages/missing-root-layout-tags"
+  "638": "The following tags are missing in the Root Layout: %s.\\nRead more at https://nextjs.org/docs/messages/missing-root-layout-tags",
+  "639": "Specified nextUrlServerPrefix is not a string, found type \"%s\" https://nextjs.org/docs/messages/invalid-next-url-server-prefix",
+  "640": "Specified nextUrlServerPrefix has to start with a /, found \"%s\" https://nextjs.org/docs/messages/invalid-next-url-server-prefix",
+  "641": "Specified nextUrlServerPrefix should not end with /, found \"%s\" https://nextjs.org/docs/messages/invalid-next-url-server-prefix",
+  "642": "Specified nextUrlServerPrefix /. nextUrlServerPrefix has to be either an empty string or a path prefix\" https://nextjs.org/docs/messages/invalid-next-url-server-prefix"
 }

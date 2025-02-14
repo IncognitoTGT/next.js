@@ -1599,6 +1599,7 @@ export default async function getBaseWebpackConfig(
                   compilerType,
                   basePath: config.basePath,
                   assetPrefix: config.assetPrefix,
+                  nextUrlServerPrefix: config.experimental?.nextUrlServerPrefix,
                 },
               },
             ]
