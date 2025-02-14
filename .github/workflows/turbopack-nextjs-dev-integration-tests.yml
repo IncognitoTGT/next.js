@@ -73,7 +73,7 @@ jobs:
         group: [1, 2, 3, 4, 5]
     uses: ./.github/workflows/build_reusable.yml
     with:
-      afterBuildEnvJson: ${{ toJson(needs.env-vars.outputs.envJson) }}
+      afterBuildEnvJson: ${{ needs.env-vars.outputs.envJson }}
       afterBuild: |
         NEXT_TEST_MODE=dev node run-tests.js \
           --test-pattern '^(test\/(development|e2e))/.*\.test\.(js|jsx|ts|tsx)$' \
@@ -95,7 +95,7 @@ jobs:
     uses: ./.github/workflows/build_reusable.yml
     with:
       nodeVersion: 18.18.2
-      afterBuildEnvJson: ${{ toJson(needs.env-vars.outputs.envJson) }}
+      afterBuildEnvJson: ${{ needs.env-vars.outputs.envJson }}
       afterBuild: |
         node run-tests.js \
           --timings \
