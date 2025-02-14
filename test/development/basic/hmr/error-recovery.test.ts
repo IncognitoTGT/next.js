@@ -653,7 +653,6 @@ describe.each([
              4 | invalid
              5 | js
 
-<<<<<<< HEAD
               Expression expected"
             `)
         } else if (process.env.NEXT_RSPACK) {
@@ -678,9 +677,6 @@ describe.each([
            Import trace for requested module:
            ./components/parse-error.js
            ./pages/hmr/about9.js"
-=======
-           Expression expected"
->>>>>>> origin/canary
           `)
         } else {
           redboxSource = redboxSource.substring(
