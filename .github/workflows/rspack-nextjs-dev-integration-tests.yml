@@ -68,14 +68,17 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [1, 2, 3, 4, 5]
+        # Use more groups than we use for Turbopack: Many of these tests are
+        # failing. Tests often take a lot longer when failing (as each test must
+        # timeout). This can cause timeouts if the groups are too large.
+        group: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     uses: ./.github/workflows/build_reusable.yml
     with:
       afterBuildEnvJson: ${{ needs.env-vars.outputs.envJson }}
       afterBuild: |
         NEXT_TEST_MODE=dev node run-tests.js \
           --test-pattern '^(test\/(development|e2e))/.*\.test\.(js|jsx|ts|tsx)$' \
-          -g ${{ matrix.group }}/5 \
+          -g ${{ matrix.group }}/16 \
           -c $TEST_CONCURRENCY \
           --type development
       stepName: 'test-rspack-dev-${{ matrix.group }}'
@@ -89,14 +92,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        group: [1, 2, 3, 4, 5, 6]
+        group: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     uses: ./.github/workflows/build_reusable.yml
     with:
       nodeVersion: 18.18.2
       afterBuildEnvJson: ${{ needs.env-vars.outputs.envJson }}
       afterBuild: |
         node run-tests.js \
-          -g ${{ matrix.group }}/6 \
+          -g ${{ matrix.group }}/16 \
           -c $TEST_CONCURRENCY \
           --type integration
       stepName: 'test-rspack-dev-integration-${{ matrix.group }}'
