@@ -30,6 +30,16 @@ env:
   NEXT_RSPACK: 1
 
 jobs:
+  # Hack to share environment variables with `build_reusable` workflow via
+  # `afterBuildEnvJson`.
+  # https://github.com/orgs/community/discussions/26671#discussioncomment-4295807
+  env-vars:
+    runs-on: ubuntu-latest
+    outputs:
+      envJson: ${{ toJson(env) }}
+    steps:
+      - run: echo "Exposing env vars"
+
   # First, build next-dev and Next.js both to execute across tests.
   build-next:
     name: build-next
@@ -54,50 +64,43 @@ jobs:
     # Name must match `integrationTestJobs` in
     # `./.github/actions/next-integration-stat`
     name: Next.js integration test (Development)
-    needs: ['build-next', 'build-native']
+    needs: [env-vars, build-next, build-native]
     strategy:
       fail-fast: false
       matrix:
         group: [1, 2, 3, 4, 5]
-    runs-on: ubuntu-latest # this is just a wrapper job for build-and-run
-    steps:
-      # must be a step, so that the `env` context var is available in `with`
-      - name: build-and-run
-        uses: ./.github/workflows/build_reusable.yml
-        with:
-          afterBuildEnvJson: ${{ toJson(env) }}
-          afterBuild: |
-            NEXT_TEST_MODE=dev node run-tests.js \
-              --test-pattern '^(test\/(development|e2e))/.*\.test\.(js|jsx|ts|tsx)$' \
-              -g ${{ matrix.group }}/5 \
-              -c $TEST_CONCURRENCY \
-              --type development
-          stepName: 'test-rspack-dev-${{ matrix.group }}'
-        secrets: inherit
+    uses: ./.github/workflows/build_reusable.yml
+    with:
+      afterBuildEnvJson: ${{ toJson(needs.env-vars.outputs.envJson) }}
+      afterBuild: |
+        NEXT_TEST_MODE=dev node run-tests.js \
+          --test-pattern '^(test\/(development|e2e))/.*\.test\.(js|jsx|ts|tsx)$' \
+          -g ${{ matrix.group }}/5 \
+          -c $TEST_CONCURRENCY \
+          --type development
+      stepName: 'test-rspack-dev-${{ matrix.group }}'
+    secrets: inherit
 
   test-integration-development:
     # Name must match `integrationTestJobs` in
     # `./.github/actions/next-integration-stat`
     name: Next.js integration test (Integration)
-    needs: ['build-next', 'build-native']
+    needs: [env-vars, build-next, build-native]
     strategy:
       fail-fast: false
       matrix:
         group: [1, 2, 3, 4, 5, 6]
-    runs-on: ubuntu-latest
-    steps:
-      - name: build-and-run
-        uses: ./.github/workflows/build_reusable.yml
-        with:
-          nodeVersion: 18.18.2
-          afterBuildEnvJson: ${{ toJson(env) }}
-          afterBuild: |
-            node run-tests.js \
-              -g ${{ matrix.group }}/6 \
-              -c $TEST_CONCURRENCY \
-              --type integration
-          stepName: 'test-rspack-dev-integration-${{ matrix.group }}'
-        secrets: inherit
+    uses: ./.github/workflows/build_reusable.yml
+    with:
+      nodeVersion: 18.18.2
+      afterBuildEnvJson: ${{ toJson(needs.env-vars.outputs.envJson) }}
+      afterBuild: |
+        node run-tests.js \
+          -g ${{ matrix.group }}/6 \
+          -c $TEST_CONCURRENCY \
+          --type integration
+      stepName: 'test-rspack-dev-integration-${{ matrix.group }}'
+    secrets: inherit
 
   # Collect integration test results from execute_tests,
   # Store it as github artifact for next step to consume.
