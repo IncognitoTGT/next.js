@@ -75,7 +75,7 @@ jobs:
               -g ${{ matrix.group }}/5 \
               -c $TEST_CONCURRENCY
           stepName: 'test-turbopack-dev-${{ matrix.group }}'
-    secrets: inherit
+        secrets: inherit
 
   test-integration-development:
     # Name must match `integrationTestJobs` in
@@ -100,7 +100,7 @@ jobs:
               -c $TEST_CONCURRENCY \
               --type integration
           stepName: 'test-turbopack-integration-${{ matrix.group }}'
-    secrets: inherit
+        secrets: inherit
 
   # Collect integration test results from execute_tests,
   # Store it as github artifact for next step to consume.

@@ -73,7 +73,7 @@ jobs:
               -c $TEST_CONCURRENCY \
               --type development
           stepName: 'test-rspack-dev-${{ matrix.group }}'
-    secrets: inherit
+        secrets: inherit
 
   test-integration-development:
     # Name must match `integrationTestJobs` in
@@ -97,7 +97,7 @@ jobs:
               -c $TEST_CONCURRENCY \
               --type integration
           stepName: 'test-rspack-dev-integration-${{ matrix.group }}'
-    secrets: inherit
+        secrets: inherit
 
   # Collect integration test results from execute_tests,
   # Store it as github artifact for next step to consume.
